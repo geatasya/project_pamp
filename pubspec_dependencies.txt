@@ -1,0 +1,1 @@
+flutter pub add supabase_flutter provider google_fonts intl
