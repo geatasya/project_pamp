@@ -157,29 +157,24 @@ class EventCard extends StatelessWidget {
             left: 8,
             child: Material(
               color: Colors.transparent,
-              child: Tooltip(
-                message: event.isVisited
-                    ? 'Sudah Dikunjungi (Klik untuk tandai Belum)'
-                    : 'Belum Dikunjungi (Klik untuk tandai Sudah)',
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(30),
-                  onTap: onToggleVisited,
-                  child: Pill(
-                    event.isVisited ? 'DIKUNJUNGI' : 'BELUM DIKUNJUNGI',
-                    icon: event.isVisited
-                        ? Icons.check_circle_rounded
-                        : Icons.radio_button_unchecked_rounded,
-                    bg: event.isVisited
-                        ? AppColors.greenBg
-                        : Colors.white.withAlpha(240),
-                    fg: event.isVisited
-                        ? AppColors.green
-                        : AppColors.muted,
-                    borderColor: event.isVisited
-                        ? const Color(0xFFBFE5CC)
-                        : AppColors.border,
-                    fontSize: 10,
-                  ),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(30),
+                onTap: onToggleVisited,
+                child: Pill(
+                  event.isVisited ? 'DIKUNJUNGI' : 'BELUM DIKUNJUNGI',
+                  icon: event.isVisited
+                      ? Icons.check_circle_rounded
+                      : Icons.radio_button_unchecked_rounded,
+                  bg: event.isVisited
+                      ? AppColors.greenBg
+                      : Colors.white.withAlpha(240),
+                  fg: event.isVisited
+                      ? AppColors.green
+                      : AppColors.muted,
+                  borderColor: event.isVisited
+                      ? const Color(0xFFBFE5CC)
+                      : AppColors.border,
+                  fontSize: 10,
                 ),
               ),
             ),
@@ -193,24 +188,21 @@ class EventCard extends StatelessWidget {
               color: Colors.white.withAlpha(240),
               shape: const CircleBorder(),
               elevation: 2,
-              child: Tooltip(
-                message: event.isFavorite
-                    ? 'Hapus dari Wishlist'
-                    : 'Tambah ke Wishlist',
-                child: InkWell(
-                  customBorder: const CircleBorder(),
-                  onTap: onFavorite,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Icon(
-                      event.isFavorite
-                          ? Icons.favorite_rounded
-                          : Icons.favorite_border_rounded,
-                      size: 20,
-                      color: event.isFavorite
-                          ? AppColors.red
-                          : AppColors.ink.withAlpha(190),
-                    ),
+              child: SizedBox(
+                width: 38,
+                height: 38,
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  iconSize: 20,
+                  splashRadius: 20,
+                  onPressed: onFavorite,
+                  icon: Icon(
+                    event.isFavorite
+                        ? Icons.favorite_rounded
+                        : Icons.favorite_border_rounded,
+                    color: event.isFavorite
+                        ? AppColors.red
+                        : AppColors.ink.withAlpha(190),
                   ),
                 ),
               ),
