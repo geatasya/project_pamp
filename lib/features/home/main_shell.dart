@@ -7,6 +7,7 @@ import '../../core/widgets/app_logo.dart';
 import '../../core/widgets/ui_kit.dart';
 import '../auth/presentation/auth_provider.dart';
 import '../event/presentation/event_list_page.dart';
+import '../event_transaction/presentation/pages/event_transaction_list_page.dart';
 import '../profile/profile_page.dart';
 import '../savings/presentation/savings_page.dart';
 
@@ -25,9 +26,9 @@ const _items = [
     'Jadwal Konser',
   ),
   _NavItem(
-    Icons.confirmation_number_outlined,
-    Icons.confirmation_number_rounded,
-    'Tiket Saya',
+    Icons.receipt_long_outlined,
+    Icons.receipt_long_rounded,
+    'Transaksi Event',
   ),
   _NavItem(
     Icons.account_balance_wallet_outlined,
@@ -53,16 +54,8 @@ class _MainShellState extends State<MainShell> {
 
   late final List<Widget> _pages = [
     const EventListPage(),
-
-    const PlaceholderPage(
-      title: 'Tiket Saya',
-      subtitle:
-      'Riwayat tiket yang sudah dibeli.\nFitur ini dikerjakan anggota kelompok lain (Fitur 2).',
-      icon: Icons.confirmation_number_rounded,
-    ),
-
+    const EventTransactionListPage(),
     const SavingsPage(),
-
     const ProfilePage(),
   ];
 

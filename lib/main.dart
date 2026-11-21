@@ -16,6 +16,16 @@ import 'features/event/data/event_repository_impl.dart';
 import 'features/event/domain/usecases/event_usecases.dart';
 import 'features/event/presentation/event_provider.dart';
 
+import 'features/event_transaction/data/datasources/event_transaction_remote_datasource.dart';
+import 'features/event_transaction/data/repositories/event_transaction_repository_impl.dart';
+import 'features/event_transaction/domain/usecases/event_transaction_usecases.dart';
+import 'features/event_transaction/presentation/providers/event_transaction_provider.dart';
+
+import 'features/savings/data/datasources/savings_remote_datasource.dart';
+import 'features/savings/data/repositories/savings_repository_impl.dart';
+import 'features/savings/domain/usecases/savings_usecases.dart';
+import 'features/savings/presentation/providers/savings_provider.dart';
+
 import 'features/home/main_shell.dart';
 
 Future<void> main() async {
@@ -30,9 +40,22 @@ Future<void> main() async {
 
   final client = Supabase.instance.client;
 
+  // 1. Feature Auth & Core
   final authRepo = AuthRepositoryImpl(client);
+
+  // 2. Feature 1: List Event Konser
   final eventRepo = EventRepositoryImpl(
     EventRemoteDataSource(client),
+  );
+
+  // 3. Feature 2: Transaksi Event
+  final eventTxRepo = EventTransactionRepositoryImpl(
+    EventTransactionRemoteDataSource(client),
+  );
+
+  // 4. Feature 3: Savings Pocket
+  final savingsRepo = SavingsRepositoryImpl(
+    SavingsRemoteDataSource(client),
   );
 
   runApp(
@@ -53,6 +76,26 @@ Future<void> main() async {
             UpdateEvent(eventRepo),
             DeleteEvent(eventRepo),
             UploadPoster(eventRepo),
+          ),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => EventTransactionProvider(
+            getEligibleEvents: GetEligibleEvents(eventTxRepo),
+            getAvailablePockets: GetAvailablePockets(eventTxRepo),
+            getEventTransactions: GetEventTransactions(eventTxRepo),
+            addEventTransaction: AddEventTransaction(eventTxRepo),
+            updateEventTransaction: UpdateEventTransaction(eventTxRepo),
+            deleteEventTransaction: DeleteEventTransaction(eventTxRepo),
+          ),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => SavingsProvider(
+            getPockets: GetSavingsPockets(savingsRepo),
+            getTransactions: GetPocketTransactions(savingsRepo),
+            createPocket: CreatePocket(savingsRepo),
+            updatePocket: UpdatePocket(savingsRepo),
+            deletePocket: DeletePocket(savingsRepo),
+            addTransaction: AddPocketTransaction(savingsRepo),
           ),
         ),
       ],
