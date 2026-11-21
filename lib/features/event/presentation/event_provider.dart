@@ -158,25 +158,28 @@ class EventProvider extends ChangeNotifier {
   }
 
   // Update cepat (optimistic): tampilan berubah dulu, balik lagi kalau gagal.
-  Future<void> _patch(EventEntity updated) async {
+  Future<bool> _patch(EventEntity updated) async {
     final i = _all.indexWhere((x) => x.id == updated.id);
-    if (i < 0) return;
+    if (i < 0) return false;
     final old = _all[i];
     _all[i] = updated;
     notifyListeners();
     try {
       await _update(updated);
+      return true;
     } catch (err) {
+      debugPrint('[EventProvider] Gagal update event: $err');
       _all[i] = old;
       error = _msg(err);
       notifyListeners();
+      return false;
     }
   }
 
-  Future<void> toggleVisited(EventEntity e) =>
+  Future<bool> toggleVisited(EventEntity e) =>
       _patch(e.copyWith(isVisited: !e.isVisited));
 
-  Future<void> toggleFavorite(EventEntity e) =>
+  Future<bool> toggleFavorite(EventEntity e) =>
       _patch(e.copyWith(isFavorite: !e.isFavorite));
 
   /// Return URL poster, atau null kalau gagal (pesan ada di [error]).

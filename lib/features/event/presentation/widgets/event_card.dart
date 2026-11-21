@@ -61,149 +61,162 @@ class EventCard extends StatelessWidget {
         side: const BorderSide(color: AppColors.border),
       ),
       clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Column(
-          children: [
-            Expanded(
-              child: Stack(
-                fit: StackFit.expand,
+      child: Stack(
+        children: [
+          // 1. Layer Dasar: Seluruh kartu bisa diklik untuk membuka halaman detail
+          Positioned.fill(
+            child: InkWell(
+              onTap: onTap,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Hero(
-                    tag: 'poster-${event.id}',
-                    child: EventPoster(url: event.imageUrl),
+                  Expanded(
+                    child: Hero(
+                      tag: 'poster-${event.id}',
+                      child: EventPoster(url: event.imageUrl),
+                    ),
                   ),
-
-                  // Badge Status Kunjungan (Bisa diklik langsung untuk ubah status)
-                  Positioned(
-                    top: 8,
-                    left: 8,
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Tooltip(
-                        message: event.isVisited
-                            ? 'Sudah Dikunjungi (Klik untuk ubah)'
-                            : 'Belum Dikunjungi (Klik untuk tandai)',
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(30),
-                          onTap: onToggleVisited,
-                          child: Pill(
-                            event.isVisited ? 'DIKUNJUNGI' : 'BELUM DIKUNJUNGI',
-                            icon: event.isVisited
-                                ? Icons.check_circle_rounded
-                                : Icons.radio_button_unchecked_rounded,
-                            bg: event.isVisited
-                                ? AppColors.greenBg
-                                : Colors.white.withAlpha(235),
-                            fg: event.isVisited
-                                ? AppColors.green
-                                : AppColors.muted,
-                            borderColor: event.isVisited
-                                ? const Color(0xFFBFE5CC)
-                                : AppColors.border,
-                            fontSize: 10,
+                  SizedBox(
+                    height: infoHeight,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            event.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.w800),
                           ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // Tombol Love / Wishlist (Material terisolasi agar event klik tidak bentrok)
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: Material(
-                      color: Colors.white.withAlpha(235),
-                      shape: const CircleBorder(),
-                      elevation: 2,
-                      child: Tooltip(
-                        message: event.isFavorite
-                            ? 'Hapus dari Wishlist'
-                            : 'Tambah ke Wishlist',
-                        child: InkWell(
-                          customBorder: const CircleBorder(),
-                          onTap: onFavorite,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: Icon(
-                              event.isFavorite
-                                  ? Icons.favorite_rounded
-                                  : Icons.favorite_border_rounded,
-                              size: 20,
-                              color: event.isFavorite
-                                  ? AppColors.red
-                                  : AppColors.ink.withAlpha(190),
-                            ),
+                          const SizedBox(height: 2),
+                          Text(
+                            event.location,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                                fontSize: 12, color: AppColors.muted),
                           ),
-                        ),
+                          const Spacer(),
+                          const Divider(height: 1),
+                          const SizedBox(height: 10),
+                          Row(
+                            children: [
+                              const Icon(Icons.calendar_today_outlined,
+                                  size: 14, color: AppColors.muted),
+                              const SizedBox(width: 7),
+                              Expanded(
+                                child: Text(
+                                  formatShortRange(event),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ),
-
-                  if (event.priceFrom != null)
-                    Positioned(
-                      left: 10,
-                      bottom: 10,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: const Color(0xCC14141C),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          formatRupiah(event.priceFrom!),
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 11.5,
-                              fontWeight: FontWeight.w800),
-                        ),
-                      ),
-                    ),
                 ],
               ),
             ),
-            SizedBox(
-              height: infoHeight,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(event.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.w800)),
-                    const SizedBox(height: 2),
-                    Text(event.location,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                            fontSize: 12, color: AppColors.muted)),
-                    const Spacer(),
-                    const Divider(height: 1),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        const Icon(Icons.calendar_today_outlined,
-                            size: 14, color: AppColors.muted),
-                        const SizedBox(width: 7),
-                        Expanded(
-                          child: Text(formatShortRange(event),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                  fontSize: 12, fontWeight: FontWeight.w700)),
-                        ),
-                      ],
-                    ),
-                  ],
+          ),
+
+          // 2. Badge Harga di pojok kiri bawah poster (IgnorePointer agar klik diteruskan ke kartu)
+          if (event.priceFrom != null)
+            Positioned(
+              left: 10,
+              bottom: infoHeight + 10,
+              child: IgnorePointer(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xCC14141C),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    formatRupiah(event.priceFrom!),
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w800),
+                  ),
                 ),
               ),
             ),
-          ],
-        ),
+
+          // 3. Status Kunjungan (Badge interaktif terpisah - Klik untuk ganti status)
+          Positioned(
+            top: 8,
+            left: 8,
+            child: Material(
+              color: Colors.transparent,
+              child: Tooltip(
+                message: event.isVisited
+                    ? 'Sudah Dikunjungi (Klik untuk tandai Belum)'
+                    : 'Belum Dikunjungi (Klik untuk tandai Sudah)',
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(30),
+                  onTap: onToggleVisited,
+                  child: Pill(
+                    event.isVisited ? 'DIKUNJUNGI' : 'BELUM DIKUNJUNGI',
+                    icon: event.isVisited
+                        ? Icons.check_circle_rounded
+                        : Icons.radio_button_unchecked_rounded,
+                    bg: event.isVisited
+                        ? AppColors.greenBg
+                        : Colors.white.withAlpha(240),
+                    fg: event.isVisited
+                        ? AppColors.green
+                        : AppColors.muted,
+                    borderColor: event.isVisited
+                        ? const Color(0xFFBFE5CC)
+                        : AppColors.border,
+                    fontSize: 10,
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // 4. Tombol Wishlist / Favorite (Lingkaran interaktif terpisah - Klik untuk love)
+          Positioned(
+            top: 8,
+            right: 8,
+            child: Material(
+              color: Colors.white.withAlpha(240),
+              shape: const CircleBorder(),
+              elevation: 2,
+              child: Tooltip(
+                message: event.isFavorite
+                    ? 'Hapus dari Wishlist'
+                    : 'Tambah ke Wishlist',
+                child: InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: onFavorite,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Icon(
+                      event.isFavorite
+                          ? Icons.favorite_rounded
+                          : Icons.favorite_border_rounded,
+                      size: 20,
+                      color: event.isFavorite
+                          ? AppColors.red
+                          : AppColors.ink.withAlpha(190),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

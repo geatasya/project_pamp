@@ -265,12 +265,65 @@ class _EventListPageState extends State<EventListPage> {
                     sliver: SliverGrid(
                       gridDelegate: gridDelegate,
                       delegate: SliverChildBuilderDelegate(
-                        (_, i) => EventCard(
-                          event: events[i],
-                          onTap: () => _openDetail(events[i].id!),
-                          onFavorite: () => p.toggleFavorite(events[i]),
-                          onToggleVisited: () => p.toggleVisited(events[i]),
-                        ),
+                        (_, i) {
+                          final eventItem = events[i];
+                          return EventCard(
+                            event: eventItem,
+                            onTap: () => _openDetail(eventItem.id!),
+                            onFavorite: () async {
+                              final wasFav = eventItem.isFavorite;
+                              final ok = await p.toggleFavorite(eventItem);
+                              if (!mounted) return;
+                              ScaffoldMessenger.of(context).clearSnackBars();
+                              if (ok) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(wasFav
+                                        ? 'Dihapus dari Wishlist'
+                                        : 'Ditambahkan ke Wishlist ❤️'),
+                                    duration: const Duration(milliseconds: 1400),
+                                    behavior: SnackBarBehavior.floating,
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Gagal: ${p.error ?? "Periksa izin database"}'),
+                                    backgroundColor: AppColors.red,
+                                    duration: const Duration(seconds: 3),
+                                    behavior: SnackBarBehavior.floating,
+                                  ),
+                                );
+                              }
+                            },
+                            onToggleVisited: () async {
+                              final wasVisited = eventItem.isVisited;
+                              final ok = await p.toggleVisited(eventItem);
+                              if (!mounted) return;
+                              ScaffoldMessenger.of(context).clearSnackBars();
+                              if (ok) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(wasVisited
+                                        ? 'Status diubah: Belum Dikunjungi'
+                                        : 'Status diubah: Sudah Dikunjungi ✅'),
+                                    duration: const Duration(milliseconds: 1400),
+                                    behavior: SnackBarBehavior.floating,
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Gagal: ${p.error ?? "Periksa izin database"}'),
+                                    backgroundColor: AppColors.red,
+                                    duration: const Duration(seconds: 3),
+                                    behavior: SnackBarBehavior.floating,
+                                  ),
+                                );
+                              }
+                            },
+                          );
+                        },
                         childCount: events.length,
                       ),
                     ),
