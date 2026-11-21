@@ -209,7 +209,7 @@ class EventDetailPage extends StatelessWidget {
     if (e.lineupList.isNotEmpty) out.add(_lineupCard(e));
     final saving = _savingCard(e);
     if (saving != null) out.add(saving);
-    out.add(_statusCard(p, e));
+    out.add(_statusCard(context, p, e));
     if ((e.description ?? '').trim().isNotEmpty) out.add(_descCard(e));
     if ((e.notes ?? '').trim().isNotEmpty || e.checklistList.isNotEmpty) {
       out.add(_notesCard(context, e));
@@ -254,14 +254,40 @@ class EventDetailPage extends StatelessWidget {
               top: 14,
               right: 14,
               child: RoundIconButton(
-                  icon: e.isFavorite
-                      ? Icons.favorite_rounded
-                      : Icons.favorite_border_rounded,
-                  fg: e.isFavorite ? AppColors.red : AppColors.ink,
-                  size: 42,
-                  bordered: false,
-                  bg: Colors.white.withAlpha(235),
-                  onTap: () => p.toggleFavorite(e)),
+                icon: e.isFavorite
+                    ? Icons.favorite_rounded
+                    : Icons.favorite_border_rounded,
+                fg: e.isFavorite ? AppColors.red : AppColors.ink,
+                size: 42,
+                bordered: false,
+                bg: Colors.white.withAlpha(235),
+                onTap: () async {
+                  final wasFav = e.isFavorite;
+                  final ok = await p.toggleFavorite(e);
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).clearSnackBars();
+                  if (ok) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(wasFav
+                            ? 'Dihapus dari Wishlist'
+                            : 'Ditambahkan ke Wishlist ❤️'),
+                        duration: const Duration(milliseconds: 1400),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Gagal: ${p.error ?? "Periksa izin database"}'),
+                        backgroundColor: AppColors.red,
+                        duration: const Duration(seconds: 3),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  }
+                },
+              ),
             ),
             Positioned(
               left: 14,
@@ -745,7 +771,7 @@ class EventDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _statusCard(EventProvider p, EventEntity e) => SoftCard(
+  Widget _statusCard(BuildContext context, EventProvider p, EventEntity e) => SoftCard(
         child: Row(
           children: [
             IconTile(
@@ -768,7 +794,35 @@ class EventDetailPage extends StatelessWidget {
                 ],
               ),
             ),
-            Switch(value: e.isVisited, onChanged: (_) => p.toggleVisited(e)),
+            Switch(
+              value: e.isVisited,
+              onChanged: (_) async {
+                final wasVisited = e.isVisited;
+                final ok = await p.toggleVisited(e);
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).clearSnackBars();
+                if (ok) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(wasVisited
+                          ? 'Status diubah: Belum Dikunjungi'
+                          : 'Status diubah: Sudah Dikunjungi ✅'),
+                      duration: const Duration(milliseconds: 1400),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Gagal: ${p.error ?? "Periksa izin database"}'),
+                      backgroundColor: AppColors.red,
+                      duration: const Duration(seconds: 3),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                }
+              },
+            ),
           ],
         ),
       );

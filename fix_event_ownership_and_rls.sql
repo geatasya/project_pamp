@@ -1,14 +1,13 @@
 -- ==============================================================================
 -- FIX KEPEMILIKAN EVENT & IZIN RLS (Supabase SQL Editor)
--- Jalankan skrip ini sekali di Supabase Dashboard > SQL Editor
+-- Jalankan skrip ini di Supabase Dashboard > SQL Editor > Run
 -- ==============================================================================
 
--- 1. Berikan kepemilikan event yang sudah ada ke akun geatasya@gmail.com
+-- 1. Pindahkan kepemilikan SEMUA event yang ada ke akun geatasya@gmail.com
 UPDATE public.events
-SET user_id = (SELECT id FROM auth.users WHERE email = 'geatasya@gmail.com' LIMIT 1)
-WHERE user_id IS NULL OR user_id NOT IN (SELECT id FROM auth.users);
+SET user_id = (SELECT id FROM auth.users WHERE email = 'geatasya@gmail.com' LIMIT 1);
 
--- 2. Perbarui policy RLS agar pengguna yang login dapat membaca dan mengupdate event miliknya atau event publik
+-- 2. Hapus semua policy lama pada tabel events agar bersih dari konflik
 DROP POLICY IF EXISTS "owner full access on events" ON public.events;
 DROP POLICY IF EXISTS "owner full access" ON public.events;
 DROP POLICY IF EXISTS "allow read all events" ON public.events;
@@ -16,23 +15,27 @@ DROP POLICY IF EXISTS "allow update events" ON public.events;
 DROP POLICY IF EXISTS "allow insert events" ON public.events;
 DROP POLICY IF EXISTS "allow delete events" ON public.events;
 
--- Boleh dibaca oleh semua pengguna yang login
+-- 3. Pasang policy baru yang mengizinkan authenticated user membaca dan mengupdate data
 CREATE POLICY "allow read all events" ON public.events
   FOR SELECT
+  TO authenticated
   USING (true);
 
--- Boleh diubah jika event tersebut milik pengguna atau belum memiliki user_id
 CREATE POLICY "allow update events" ON public.events
   FOR UPDATE
-  USING (auth.uid() = user_id OR user_id IS NULL)
-  WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
+  TO authenticated
+  USING (true)
+  WITH CHECK (true);
 
--- Boleh ditambah oleh pengguna yang login
 CREATE POLICY "allow insert events" ON public.events
   FOR INSERT
-  WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
+  TO authenticated
+  WITH CHECK (true);
 
--- Boleh dihapus jika event tersebut milik pengguna
 CREATE POLICY "allow delete events" ON public.events
   FOR DELETE
+  TO authenticated
   USING (auth.uid() = user_id OR user_id IS NULL);
+
+-- 4. Verifikasi hasil update: pastikan user_id sekarang terisi
+SELECT id, name, user_id, is_visited, is_favorite FROM public.events;
