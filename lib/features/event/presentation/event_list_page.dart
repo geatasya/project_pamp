@@ -269,6 +269,7 @@ class _EventListPageState extends State<EventListPage> {
                           event: events[i],
                           onTap: () => _openDetail(events[i].id!),
                           onFavorite: () => p.toggleFavorite(events[i]),
+                          onToggleVisited: () => p.toggleVisited(events[i]),
                         ),
                         childCount: events.length,
                       ),

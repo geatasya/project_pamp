@@ -17,11 +17,17 @@ class EventRemoteDataSource {
   }
 
   Future<void> addEvent(EventModel m) async {
-    await client.from('events').insert(m.toJson());
+    final uid = client.auth.currentUser?.id;
+    final map = Map<String, dynamic>.from(m.toJson());
+    if (uid != null) map['user_id'] = uid;
+    await client.from('events').insert(map);
   }
 
   Future<void> updateEvent(EventModel m) async {
-    await client.from('events').update(m.toJson()).eq('id', m.id!);
+    final uid = client.auth.currentUser?.id;
+    final map = Map<String, dynamic>.from(m.toJson());
+    if (uid != null) map['user_id'] = uid;
+    await client.from('events').update(map).eq('id', m.id!);
   }
 
   Future<void> deleteEvent(String id) async {

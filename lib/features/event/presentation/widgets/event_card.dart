@@ -42,31 +42,15 @@ class EventCard extends StatelessWidget {
   final EventEntity event;
   final VoidCallback onTap;
   final VoidCallback onFavorite;
+  final VoidCallback? onToggleVisited;
+
   const EventCard({
     super.key,
     required this.event,
     required this.onTap,
     required this.onFavorite,
+    this.onToggleVisited,
   });
-
-  Widget _badge() {
-    if (event.isVisited) {
-      return const Pill('DIKUNJUNGI',
-          icon: Icons.check_circle_rounded,
-          bg: AppColors.greenBg,
-          fg: AppColors.green,
-          fontSize: 10);
-    }
-    if (event.eventType != null) {
-      return Pill(typeBadge(event.eventType!),
-          bg: Colors.white, fg: AppColors.ink, fontSize: 10);
-    }
-    if (event.isFavorite) {
-      return const Pill('WISHLIST',
-          bg: AppColors.redBg, fg: AppColors.red, fontSize: 10);
-    }
-    return const SizedBox.shrink();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,31 +73,73 @@ class EventCard extends StatelessWidget {
                     tag: 'poster-${event.id}',
                     child: EventPoster(url: event.imageUrl),
                   ),
-                  Positioned(top: 10, left: 10, child: _badge()),
+
+                  // Badge Status Kunjungan (Bisa diklik langsung untuk ubah status)
                   Positioned(
                     top: 8,
-                    right: 8,
-                    child: GestureDetector(
-                      onTap: onFavorite,
-                      child: Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withAlpha(220),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          event.isFavorite
-                              ? Icons.favorite_rounded
-                              : Icons.favorite_border_rounded,
-                          size: 19,
-                          color: event.isFavorite
-                              ? AppColors.red
-                              : AppColors.ink.withAlpha(190),
+                    left: 8,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Tooltip(
+                        message: event.isVisited
+                            ? 'Sudah Dikunjungi (Klik untuk ubah)'
+                            : 'Belum Dikunjungi (Klik untuk tandai)',
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(30),
+                          onTap: onToggleVisited,
+                          child: Pill(
+                            event.isVisited ? 'DIKUNJUNGI' : 'BELUM DIKUNJUNGI',
+                            icon: event.isVisited
+                                ? Icons.check_circle_rounded
+                                : Icons.radio_button_unchecked_rounded,
+                            bg: event.isVisited
+                                ? AppColors.greenBg
+                                : Colors.white.withAlpha(235),
+                            fg: event.isVisited
+                                ? AppColors.green
+                                : AppColors.muted,
+                            borderColor: event.isVisited
+                                ? const Color(0xFFBFE5CC)
+                                : AppColors.border,
+                            fontSize: 10,
+                          ),
                         ),
                       ),
                     ),
                   ),
+
+                  // Tombol Love / Wishlist (Material terisolasi agar event klik tidak bentrok)
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Material(
+                      color: Colors.white.withAlpha(235),
+                      shape: const CircleBorder(),
+                      elevation: 2,
+                      child: Tooltip(
+                        message: event.isFavorite
+                            ? 'Hapus dari Wishlist'
+                            : 'Tambah ke Wishlist',
+                        child: InkWell(
+                          customBorder: const CircleBorder(),
+                          onTap: onFavorite,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: Icon(
+                              event.isFavorite
+                                  ? Icons.favorite_rounded
+                                  : Icons.favorite_border_rounded,
+                              size: 20,
+                              color: event.isFavorite
+                                  ? AppColors.red
+                                  : AppColors.ink.withAlpha(190),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
                   if (event.priceFrom != null)
                     Positioned(
                       left: 10,

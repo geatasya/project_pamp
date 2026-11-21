@@ -38,8 +38,8 @@ alter table public.events enable row level security;
 
 create policy "owner full access on events" on public.events
   for all
-  using (auth.uid() = user_id)
-  with check (auth.uid() = user_id);
+  using (auth.uid() = user_id or user_id is null)
+  with check (auth.uid() = user_id or user_id is null);
 
 create index if not exists idx_events_eligible on public.events(user_id, is_favorite, is_visited);
 
