@@ -110,6 +110,7 @@ class _EventListPageState extends State<EventListPage> {
       backgroundColor: AppColors.bg,
       floatingActionButton: wide
           ? FloatingActionButton.extended(
+              heroTag: null,
               onPressed: _openForm,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(22)),
@@ -118,6 +119,7 @@ class _EventListPageState extends State<EventListPage> {
                   style: TextStyle(fontWeight: FontWeight.w800)),
             )
           : FloatingActionButton(
+              heroTag: null,
               onPressed: _openForm,
               shape: const CircleBorder(),
               child: const Icon(Icons.add_rounded, size: 30),

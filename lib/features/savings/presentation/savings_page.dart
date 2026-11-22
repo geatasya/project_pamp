@@ -387,6 +387,7 @@ class _SavingsPageState extends State<SavingsPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: null,
         onPressed: () => _pocketDialog(),
         icon: const Icon(Icons.add_rounded),
         label: const Text('Buat Tabungan'),

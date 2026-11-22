@@ -74,12 +74,14 @@ class _EventTransactionListPageState extends State<EventTransactionListPage> {
       ),
       floatingActionButton: wide
           ? FloatingActionButton.extended(
+              heroTag: null,
               onPressed: _openForm,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
               icon: const Icon(Icons.add_rounded),
               label: const Text('Catat Pengeluaran', style: TextStyle(fontWeight: FontWeight.w800)),
             )
           : FloatingActionButton(
+              heroTag: null,
               onPressed: _openForm,
               shape: const CircleBorder(),
               child: const Icon(Icons.add_rounded, size: 28),
