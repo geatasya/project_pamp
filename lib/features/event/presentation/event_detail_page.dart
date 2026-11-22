@@ -14,6 +14,7 @@ import 'event_form_page.dart';
 import 'event_provider.dart';
 import 'widgets/event_card.dart';
 import 'widgets/event_helpers.dart';
+import 'widgets/visited_expense_bottom_sheet.dart';
 
 class EventDetailPage extends StatelessWidget {
   final String eventId;
@@ -810,36 +811,7 @@ class EventDetailPage extends StatelessWidget {
                   ScaffoldMessenger.of(context).clearSnackBars();
                   if (ok) {
                     if (!wasVisited) {
-                      final txProvider = context.read<EventTransactionProvider>();
-                      final res = await txProvider.autoRecordExpenseForVisitedEvent(
-                        event: e,
-                      );
-                      if (context.mounted) {
-                        context.read<SavingsProvider>().fetchData();
-                      }
-                      if (!context.mounted) return;
-                      if (res != null) {
-                        final pName = res['pocketName'] ?? 'Tabungan Konser';
-                        final num amt = res['amount'] ?? 0;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Status: Sudah Dikunjungi ✅ & Biaya ${formatRupiah(amt)} otomatis dicatat dari kantong "$pName"!',
-                            ),
-                            backgroundColor: AppColors.ink,
-                            duration: const Duration(seconds: 4),
-                            behavior: SnackBarBehavior.floating,
-                          ),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Status diubah: Sudah Dikunjungi ✅'),
-                            duration: Duration(milliseconds: 1400),
-                            behavior: SnackBarBehavior.floating,
-                          ),
-                        );
-                      }
+                      showVisitedExpenseSheet(context, event: e);
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
