@@ -98,6 +98,12 @@ class SavingsProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> createPocket({
+    required String name,
+    required double targetAmount,
+  }) =>
+      createNewPocket(name: name, targetAmount: targetAmount);
+
   Future<bool> editPocket({
     required String id,
     required String name,

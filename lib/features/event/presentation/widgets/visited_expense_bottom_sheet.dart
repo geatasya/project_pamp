@@ -238,7 +238,7 @@ class _VisitedExpenseSheetContentState
     if (ok == true && context.mounted) {
       final savingsProv = context.read<SavingsProvider>();
       final target = double.tryParse(targetCtrl.text) ?? amount * 2;
-      final created = await savingsProv.createPocket(
+      final created = await savingsProv.createNewPocket(
         name: nameCtrl.text.trim(),
         targetAmount: target,
       );
