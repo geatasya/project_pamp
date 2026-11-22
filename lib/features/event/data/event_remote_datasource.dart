@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'event_model.dart';
 
@@ -27,7 +28,9 @@ class EventRemoteDataSource {
     final uid = client.auth.currentUser?.id;
     final map = Map<String, dynamic>.from(m.toJson());
     if (uid != null) map['user_id'] = uid;
+    debugPrint('[EventRemoteDataSource] Updating event ${m.id} with: is_favorite=${map['is_favorite']}, is_visited=${map['is_visited']}');
     await client.from('events').update(map).eq('id', m.id!);
+    debugPrint('[EventRemoteDataSource] Update success for event ${m.id}');
   }
 
   Future<void> deleteEvent(String id) async {

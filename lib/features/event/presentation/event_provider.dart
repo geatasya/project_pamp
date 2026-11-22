@@ -167,8 +167,8 @@ class EventProvider extends ChangeNotifier {
     try {
       await _update(updated);
       return true;
-    } catch (err) {
-      debugPrint('[EventProvider] Gagal update event: $err');
+    } catch (err, st) {
+      debugPrint('[EventProvider] Gagal update event: $err\n$st');
       _all[i] = old;
       error = _msg(err);
       notifyListeners();
