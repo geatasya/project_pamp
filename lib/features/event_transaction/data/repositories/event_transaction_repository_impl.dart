@@ -57,4 +57,40 @@ class EventTransactionRepositoryImpl implements EventTransactionRepository {
   @override
   Future<void> deleteEventTransaction(String transactionId) =>
       remote.deleteEventTransaction(transactionId);
+
+  @override
+  Future<Map<String, dynamic>?> autoRecordExpenseForEvent({
+    required EventEntity event,
+  }) async {
+    if (event.id == null) return null;
+
+    final alreadyExists = await remote.hasTransactionForEvent(event.id!);
+    if (alreadyExists) return null;
+
+    final amount = (event.priceFrom != null && event.priceFrom! > 0)
+        ? event.priceFrom!.toDouble()
+        : 500000.0;
+
+    final pocket = await remote.ensurePocketForExpense(requiredAmount: amount);
+    final pocketId = pocket['id'].toString();
+    final pocketName = pocket['name']?.toString() ?? 'Tabungan Konser';
+
+    final notes = 'Otomatis dicatat saat konser ditandai dikunjungi (Saldo diambil dari kantong: $pocketName)';
+    final ts = DateTime.now().microsecondsSinceEpoch;
+    final idempotencyKey = 'auto_tx_${event.id}_$ts';
+
+    await remote.addEventTransaction(
+      eventId: event.id!,
+      pocketId: pocketId,
+      amount: amount,
+      transactionDate: DateTime.now(),
+      notes: notes,
+      idempotencyKey: idempotencyKey,
+    );
+
+    return {
+      'pocketName': pocketName,
+      'amount': amount,
+    };
+  }
 }

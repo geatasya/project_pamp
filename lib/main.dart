@@ -86,6 +86,7 @@ Future<void> main() async {
             addEventTransaction: AddEventTransaction(eventTxRepo),
             updateEventTransaction: UpdateEventTransaction(eventTxRepo),
             deleteEventTransaction: DeleteEventTransaction(eventTxRepo),
+            autoRecordExpenseForEvent: AutoRecordExpenseForEvent(eventTxRepo),
           ),
         ),
         ChangeNotifierProvider(

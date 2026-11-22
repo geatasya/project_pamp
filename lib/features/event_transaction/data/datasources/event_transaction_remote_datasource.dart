@@ -98,4 +98,58 @@ class EventTransactionRemoteDataSource {
       'p_transaction_id': transactionId,
     });
   }
+
+  /// Cek apakah event sudah punya transaksi tercatat
+  Future<bool> hasTransactionForEvent(String eventId) async {
+    final res = await client
+        .from('savings_pocket_transactions')
+        .select('id')
+        .eq('user_id', _currentUserId)
+        .eq('event_id', eventId)
+        .eq('entry_source', 'event')
+        .limit(1);
+
+    return (res as List).isNotEmpty;
+  }
+
+  /// Pastikan ada pocket tabungan dengan saldo mencukupi untuk pengeluaran event
+  Future<Map<String, dynamic>> ensurePocketForExpense({
+    required double requiredAmount,
+  }) async {
+    final uid = _currentUserId;
+    final res = await client
+        .from('savings_pockets')
+        .select()
+        .eq('user_id', uid)
+        .order('created_at', ascending: true);
+
+    List<Map<String, dynamic>> pockets =
+        List<Map<String, dynamic>>.from(res as List);
+
+    if (pockets.isEmpty) {
+      final newPocket = await client.from('savings_pockets').insert({
+        'user_id': uid,
+        'name': 'Tabungan Konser Utama',
+        'target_amount': requiredAmount * 2,
+        'current_amount': requiredAmount * 2,
+      }).select().single();
+      return Map<String, dynamic>.from(newPocket);
+    }
+
+    for (final p in pockets) {
+      final current = (p['current_amount'] as num?)?.toDouble() ?? 0.0;
+      if (current >= requiredAmount) {
+        return p;
+      }
+    }
+
+    final first = pockets.first;
+    final topUpAmount = requiredAmount * 1.5;
+    await client.from('savings_pockets').update({
+      'current_amount': topUpAmount,
+    }).eq('id', first['id']);
+
+    first['current_amount'] = topUpAmount;
+    return first;
+  }
 }

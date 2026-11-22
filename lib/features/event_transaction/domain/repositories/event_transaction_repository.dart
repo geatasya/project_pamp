@@ -33,4 +33,9 @@ abstract class EventTransactionRepository {
 
   /// Hapus transaksi pengeluaran event dan rollback saldo secara atomik via RPC PostgreSQL
   Future<void> deleteEventTransaction(String transactionId);
+
+  /// Catat otomatis pengeluaran ketika konser ditandai dikunjungi (Skenario B)
+  Future<Map<String, dynamic>?> autoRecordExpenseForEvent({
+    required EventEntity event,
+  });
 }

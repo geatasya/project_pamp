@@ -176,8 +176,13 @@ class EventProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> toggleVisited(EventEntity e) =>
-      _patch(e.copyWith(isVisited: !e.isVisited));
+  Future<bool> toggleVisited(EventEntity e) {
+    if (!e.isVisited) {
+      return _patch(e.copyWith(isVisited: true, isFavorite: true));
+    } else {
+      return _patch(e.copyWith(isVisited: false));
+    }
+  }
 
   Future<bool> toggleFavorite(EventEntity e) =>
       _patch(e.copyWith(isFavorite: !e.isFavorite));

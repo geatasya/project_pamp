@@ -6,10 +6,13 @@ import '../../../core/widgets/app_logo.dart';
 import '../../../core/widgets/skeleton.dart';
 import '../../../core/widgets/ui_kit.dart';
 import '../../auth/presentation/auth_provider.dart';
+import '../../event_transaction/presentation/providers/event_transaction_provider.dart';
+import '../../savings/presentation/providers/savings_provider.dart';
 import 'event_detail_page.dart';
 import 'event_form_page.dart';
 import 'event_provider.dart';
 import 'widgets/event_card.dart';
+import 'widgets/event_helpers.dart';
 
 class EventListPage extends StatefulWidget {
   const EventListPage({super.key});
@@ -309,15 +312,46 @@ class _EventListPageState extends State<EventListPage> {
                                 if (!mounted) return;
                                 ScaffoldMessenger.of(context).clearSnackBars();
                                 if (ok) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(wasVisited
-                                          ? 'Status diubah: Belum Dikunjungi'
-                                          : 'Status diubah: Sudah Dikunjungi ✅'),
-                                      duration: const Duration(milliseconds: 1400),
-                                      behavior: SnackBarBehavior.floating,
-                                    ),
-                                  );
+                                  if (!wasVisited) {
+                                    final txProvider = context.read<EventTransactionProvider>();
+                                    final res = await txProvider.autoRecordExpenseForVisitedEvent(
+                                      event: eventItem,
+                                    );
+                                    if (mounted) {
+                                      context.read<SavingsProvider>().fetchData();
+                                    }
+                                    if (!mounted) return;
+                                    if (res != null) {
+                                      final pName = res['pocketName'] ?? 'Tabungan Konser';
+                                      final num amt = res['amount'] ?? 0;
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            'Status: Sudah Dikunjungi ✅ & Biaya ${formatRupiah(amt)} otomatis dicatat dari kantong "$pName"!',
+                                          ),
+                                          backgroundColor: AppColors.ink,
+                                          duration: const Duration(seconds: 4),
+                                          behavior: SnackBarBehavior.floating,
+                                        ),
+                                      );
+                                    } else {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Status diubah: Sudah Dikunjungi ✅'),
+                                          duration: Duration(milliseconds: 1400),
+                                          behavior: SnackBarBehavior.floating,
+                                        ),
+                                      );
+                                    }
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Status diubah: Belum Dikunjungi'),
+                                        duration: Duration(milliseconds: 1400),
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
+                                  }
                                 } else {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(

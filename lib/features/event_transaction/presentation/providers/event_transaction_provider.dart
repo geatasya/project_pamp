@@ -11,6 +11,7 @@ class EventTransactionProvider extends ChangeNotifier {
   final AddEventTransaction _addEventTransaction;
   final UpdateEventTransaction _updateEventTransaction;
   final DeleteEventTransaction _deleteEventTransaction;
+  final AutoRecordExpenseForEvent _autoRecordExpenseForEvent;
 
   EventTransactionProvider({
     required GetEligibleEvents getEligibleEvents,
@@ -19,12 +20,14 @@ class EventTransactionProvider extends ChangeNotifier {
     required AddEventTransaction addEventTransaction,
     required UpdateEventTransaction updateEventTransaction,
     required DeleteEventTransaction deleteEventTransaction,
+    required AutoRecordExpenseForEvent autoRecordExpenseForEvent,
   })  : _getEligibleEvents = getEligibleEvents,
         _getAvailablePockets = getAvailablePockets,
         _getEventTransactions = getEventTransactions,
         _addEventTransaction = addEventTransaction,
         _updateEventTransaction = updateEventTransaction,
-        _deleteEventTransaction = deleteEventTransaction;
+        _deleteEventTransaction = deleteEventTransaction,
+        _autoRecordExpenseForEvent = autoRecordExpenseForEvent;
 
   bool _isLoading = false;
   String? _error;
@@ -161,6 +164,25 @@ class EventTransactionProvider extends ChangeNotifier {
       _error = _cleanMsg(e);
       notifyListeners();
       return false;
+    }
+  }
+
+  /// Catat otomatis pengeluaran ketika konser ditandai dikunjungi (Skenario B)
+  Future<Map<String, dynamic>?> autoRecordExpenseForVisitedEvent({
+    required EventEntity event,
+  }) async {
+    _error = null;
+    try {
+      final res = await _autoRecordExpenseForEvent(event);
+      if (res != null) {
+        await fetchAll();
+      }
+      return res;
+    } catch (e) {
+      _error = _cleanMsg(e);
+      debugPrint('[EventTransactionProvider] autoRecordExpense error: $e');
+      notifyListeners();
+      return null;
     }
   }
 }

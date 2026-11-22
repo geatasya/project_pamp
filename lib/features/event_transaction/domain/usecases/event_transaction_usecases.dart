@@ -74,3 +74,11 @@ class DeleteEventTransaction {
   Future<void> call(String transactionId) =>
       repository.deleteEventTransaction(transactionId);
 }
+
+class AutoRecordExpenseForEvent {
+  final EventTransactionRepository repository;
+  AutoRecordExpenseForEvent(this.repository);
+
+  Future<Map<String, dynamic>?> call(EventEntity event) =>
+      repository.autoRecordExpenseForEvent(event: event);
+}
