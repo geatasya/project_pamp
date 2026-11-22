@@ -22,19 +22,22 @@ class RoundIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final btn = Material(
-      color: bg ?? Colors.white,
-      shape: CircleBorder(
-          side: bordered
-              ? const BorderSide(color: AppColors.border)
-              : BorderSide.none),
-      child: InkWell(
-        customBorder: const CircleBorder(),
+    final btn = MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: onTap,
-        child: SizedBox(
-          width: size,
-          height: size,
-          child: Icon(icon, size: size * 0.46, color: fg ?? AppColors.ink),
+        child: Material(
+          color: bg ?? Colors.white,
+          shape: CircleBorder(
+              side: bordered
+                  ? const BorderSide(color: AppColors.border)
+                  : BorderSide.none),
+          child: SizedBox(
+            width: size,
+            height: size,
+            child: Icon(icon, size: size * 0.46, color: fg ?? AppColors.ink),
+          ),
         ),
       ),
     );

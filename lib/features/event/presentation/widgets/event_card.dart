@@ -155,11 +155,14 @@ class EventCard extends StatelessWidget {
           Positioned(
             top: 8,
             left: 8,
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(30),
-                onTap: onToggleVisited,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                debugPrint('>>> [EventCard] KLIK STATUS KUNJUNGAN: ${event.name}');
+                onToggleVisited?.call();
+              },
+              child: MouseRegion(
+                cursor: SystemMouseCursors.click,
                 child: Pill(
                   event.isVisited ? 'DIKUNJUNGI' : 'BELUM DIKUNJUNGI',
                   icon: event.isVisited
@@ -184,25 +187,38 @@ class EventCard extends StatelessWidget {
           Positioned(
             top: 8,
             right: 8,
-            child: Material(
-              color: Colors.white.withAlpha(240),
-              shape: const CircleBorder(),
-              elevation: 2,
-              child: SizedBox(
-                width: 38,
-                height: 38,
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  iconSize: 20,
-                  splashRadius: 20,
-                  onPressed: onFavorite,
-                  icon: Icon(
-                    event.isFavorite
-                        ? Icons.favorite_rounded
-                        : Icons.favorite_border_rounded,
-                    color: event.isFavorite
-                        ? AppColors.red
-                        : AppColors.ink.withAlpha(190),
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                debugPrint('>>> [EventCard] KLIK TOMBOL LOVE: ${event.name}');
+                onFavorite();
+              },
+              child: MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withAlpha(245),
+                    shape: BoxShape.circle,
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x2A000000),
+                        blurRadius: 6,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: Icon(
+                      event.isFavorite
+                          ? Icons.favorite_rounded
+                          : Icons.favorite_border_rounded,
+                      color: event.isFavorite
+                          ? AppColors.red
+                          : AppColors.ink.withAlpha(190),
+                      size: 22,
+                    ),
                   ),
                 ),
               ),
