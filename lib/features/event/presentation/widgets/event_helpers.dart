@@ -33,7 +33,7 @@ String formatLongRange(EventEntity e) {
   return '${full.format(s)} - ${full.format(en)}';
 }
 
-String formatRupiah(int v) =>
+String formatRupiah(num v) =>
     NumberFormat.currency(locale: _loc, symbol: 'Rp ', decimalDigits: 0)
         .format(v);
 

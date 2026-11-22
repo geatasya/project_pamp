@@ -262,29 +262,33 @@ class EventDetailPage extends StatelessWidget {
                 bordered: false,
                 bg: Colors.white.withAlpha(235),
                 onTap: () async {
-                  final wasFav = e.isFavorite;
-                  final ok = await p.toggleFavorite(e);
-                  if (!context.mounted) return;
-                  ScaffoldMessenger.of(context).clearSnackBars();
-                  if (ok) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(wasFav
-                            ? 'Dihapus dari Wishlist'
-                            : 'Ditambahkan ke Wishlist ❤️'),
-                        duration: const Duration(milliseconds: 1400),
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Gagal: ${p.error ?? "Periksa izin database"}'),
-                        backgroundColor: AppColors.red,
-                        duration: const Duration(seconds: 3),
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
+                  try {
+                    final wasFav = e.isFavorite;
+                    final ok = await p.toggleFavorite(e);
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).clearSnackBars();
+                    if (ok) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(wasFav
+                              ? 'Dihapus dari Wishlist'
+                              : 'Ditambahkan ke Wishlist ❤️'),
+                          duration: const Duration(milliseconds: 1400),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Gagal: ${p.error ?? "Periksa izin database"}'),
+                          backgroundColor: AppColors.red,
+                          duration: const Duration(seconds: 3),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    }
+                  } catch (err, st) {
+                    debugPrint('[EventDetailPage] Error toggleFavorite: $err\n$st');
                   }
                 },
               ),
@@ -797,29 +801,33 @@ class EventDetailPage extends StatelessWidget {
             Switch(
               value: e.isVisited,
               onChanged: (_) async {
-                final wasVisited = e.isVisited;
-                final ok = await p.toggleVisited(e);
-                if (!context.mounted) return;
-                ScaffoldMessenger.of(context).clearSnackBars();
-                if (ok) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(wasVisited
-                          ? 'Status diubah: Belum Dikunjungi'
-                          : 'Status diubah: Sudah Dikunjungi ✅'),
-                      duration: const Duration(milliseconds: 1400),
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Gagal: ${p.error ?? "Periksa izin database"}'),
-                      backgroundColor: AppColors.red,
-                      duration: const Duration(seconds: 3),
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
+                try {
+                  final wasVisited = e.isVisited;
+                  final ok = await p.toggleVisited(e);
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).clearSnackBars();
+                  if (ok) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(wasVisited
+                            ? 'Status diubah: Belum Dikunjungi'
+                            : 'Status diubah: Sudah Dikunjungi ✅'),
+                        duration: const Duration(milliseconds: 1400),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Gagal: ${p.error ?? "Periksa izin database"}'),
+                        backgroundColor: AppColors.red,
+                        duration: const Duration(seconds: 3),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  }
+                } catch (err, st) {
+                  debugPrint('[EventDetailPage] Error toggleVisited: $err\n$st');
                 }
               },
             ),

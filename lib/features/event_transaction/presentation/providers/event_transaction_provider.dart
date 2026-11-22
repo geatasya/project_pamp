@@ -79,9 +79,9 @@ class EventTransactionProvider extends ChangeNotifier {
         _getAvailablePockets(),
       ]);
 
-      _transactions = results[0] as List<EventTransactionEntity>;
-      _eligibleEvents = results[1] as List<EventEntity>;
-      _pockets = results[2] as List<Map<String, dynamic>>;
+      _transactions = List<EventTransactionEntity>.from(results[0] as List);
+      _eligibleEvents = List<EventEntity>.from(results[1] as List);
+      _pockets = List<Map<String, dynamic>>.from(results[2] as List);
       _error = null;
     } catch (e) {
       _error = _cleanMsg(e);

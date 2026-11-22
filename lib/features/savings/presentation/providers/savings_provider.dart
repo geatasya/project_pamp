@@ -65,8 +65,8 @@ class SavingsProvider extends ChangeNotifier {
         _getTransactions(),
       ]);
 
-      _pockets = results[0] as List<SavingsPocketEntity>;
-      _transactions = results[1] as List<PocketTransactionEntity>;
+      _pockets = List<SavingsPocketEntity>.from(results[0] as List);
+      _transactions = List<PocketTransactionEntity>.from(results[1] as List);
       _error = null;
     } catch (e) {
       _error = _cleanMsg(e);
