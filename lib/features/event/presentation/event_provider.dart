@@ -120,7 +120,7 @@ class EventProvider extends ChangeNotifier {
     error = null;
     notifyListeners();
     try {
-      _all = await _get();
+      _all = List<EventEntity>.from(await _get());
     } catch (e) {
       error = _msg(e);
     }
@@ -162,9 +162,9 @@ class EventProvider extends ChangeNotifier {
     final i = _all.indexWhere((x) => x.id == updated.id);
     if (i < 0) return false;
     final old = _all[i];
-    _all[i] = updated;
-    notifyListeners();
     try {
+      _all[i] = updated;
+      notifyListeners();
       await _update(updated);
       return true;
     } catch (err, st) {

@@ -9,7 +9,10 @@ class EventRepositoryImpl implements EventRepository {
   EventRepositoryImpl(this.remote);
 
   @override
-  Future<List<EventEntity>> getEvents() => remote.getEvents();
+  Future<List<EventEntity>> getEvents() async {
+    final list = await remote.getEvents();
+    return List<EventEntity>.from(list);
+  }
 
   @override
   Future<void> addEvent(EventEntity e) => remote.addEvent(EventModel.fromEntity(e));
